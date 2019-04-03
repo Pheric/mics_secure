@@ -2,8 +2,7 @@
 # base script using generic iptables checklist
 
 
-
-iptables-save > /etc/iptables.unconfigured
+iptables-save > /root/fw4.unconfigured
 
 iptables -F # clear out old rules
 iptables -X # clears out all chains
@@ -36,17 +35,10 @@ iptables -A OUTPUT -m state --state RELATED, ESTABLISHED -j ACCEPT
 # Service this system needs from another:
 #iptables -A OUTPUT -p <tcp/udp> -d <destinationIP> --dport <destinationport> -j ACCEPT
 
-iptables-save > /root/fw4.rules
-echo "iptables-restore /root/fw4.rules" >> /etc/rc.local
+iptables-save > /root/fw{4,6}.{rules,configured}
+
+# TODO: configure systemd service if rc.local doesn't exist
+chattr -i /etc/rc.local
+echo "iptables-restore /root/fw{4,6}.rules" >> /etc/rc.local
 chmod +x /etc/rc.local
-
-
-
-
-
-
-
-
-
-
-
+chattr +i /etc/rc.local
