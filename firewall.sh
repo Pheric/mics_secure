@@ -37,8 +37,10 @@ iptables -A OUTPUT -m state --state RELATED, ESTABLISHED -j ACCEPT
 
 iptables-save > /root/fw{4,6}.{rules,configured}
 
-# TODO: configure systemd service if rc.local doesn't exist
-chattr -i /etc/rc.local
-echo "iptables-restore /root/fw{4,6}.rules" >> /etc/rc.local
-chmod +x /etc/rc.local
-chattr +i /etc/rc.local
+if [ ./rclocalCompat.sh -ne 0 ]; then
+    echo "rc.local configuration failed! Nonzero status code for rclocalCompat.sh" > /dev/stderr
+else
+    chattr -i /etc/rc.local
+    echo "iptables-restore /root/fw{4,6}.rules" >> /etc/rc.local
+    chattr +i /etc/rc.local
+fi
