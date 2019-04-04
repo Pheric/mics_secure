@@ -1,8 +1,8 @@
-##MICS Secure
+## MICS Secure
 This is a set of scripts for linux systems to secure them quickly for the 2019 MICS cybersecurity competition at NDSU.
 Much of the configuration is based off experiences learned at DSU CCDC mock competitions held multiple times per semester.
 
-###TODO
+### TODO
 * Optimize for different systems beyond updated Debian
     * Arch, Ubuntu, CentOS, even *BSD
 * Add scripts
