@@ -2,7 +2,10 @@
 # base script using generic iptables checklist
 
 function saveUnconfigured {
-	iptables-save > /root/fw4.unconfigured
+	iptables-save > /root/fw{4,6}.unconfigured
+}
+function saveConfigured {
+	iptables-save > /root/fw{4,6}.configured
 }
 
 function flushTables {
@@ -48,11 +51,10 @@ function activeFTP {
 
 
 function saveConfiguredTable {
-	iptables-save > /root/fw{4,6}.{rules,configured}
+	iptables-save > /root/fw{4,6}.rules
 }
 
-# TODO: configure systemd service if rc.local doesn't exist
-function restoreTable {
+function rclocalRestoreSetup {
 	if [ ./rclocalCompat.sh -ne 0 ]; then
     	echo "rc.local configuration failed! Nonzero status code for rclocalCompat.sh" > /dev/stderr
 	else
@@ -63,13 +65,24 @@ function restoreTable {
 }
 
 function main {
-	saveUnconfigured
+    if [ ! -f /root/fw4.configured ]; then
+	    saveUnconfigured
+    fi
+
 	flushTables
 	dropTables
+
+	# rule functions
 	enableLoopback
 	makeStateful
+	# end rule functions
+
 	saveConfiguredTable
-	restoreTable
+
+	if [ ! -f /root/fw4.configured ]; then
+	    rclocalRestoreSetup
+	    saveConfigured
+	fi
 }
 
 main
