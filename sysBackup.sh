@@ -3,6 +3,13 @@
 function setupBackups {
     mkdir /bak
     cd /bak
+
+    mkdir etc
+    cp -r /etc/cron* etc/
+    mkdir -p var/spool/cron
+    cp -r /var/spool/cron/* var/spool/cron/
+
+    chattr -R +i {etc,var}
 }
 
 function backup {
