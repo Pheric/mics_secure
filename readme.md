@@ -12,3 +12,7 @@ Much of the configuration is based off experiences learned at DSU CCDC mock comp
     * Add a script to secure php.ini
     * Remove sudo users' access and check the sudoers file for groups that have privileged access to things
         * remove the additional sudoers directory
+    * Remove common vulnerable services (telnet, etc)
+    * Run a system update
+    * Install fail2ban, IPS, etc
+* More error handling (see sshdConfigure.sh)
