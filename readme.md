@@ -16,3 +16,6 @@ Much of the configuration is based off experiences learned at DSU CCDC mock comp
     * Run a system update
     * Install fail2ban, IPS, etc
 * More error handling (see sshdConfigure.sh)
+* modify checkPamHack to initially store a hash of the file if it passes the permit grep check,
+and then set up a cronjob to check it periodically
+* disable chattr for most users?
