@@ -2,7 +2,10 @@
 
 main () {
     echo "MICS Security"
-    su - root # so the user is prompted only once
+    if [ "$EUID" -ne 0 ]
+      then echo "This script must be run as root!"
+      exit
+    fi
 
     chmod +x *.sh
     ./sysBackup.sh
