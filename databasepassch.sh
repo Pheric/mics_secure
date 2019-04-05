@@ -5,16 +5,16 @@
 
 $newpass=Password1! # obviously change this - consider using a secured password config file? encrypt or delete?
 
-function changeMysql {
+changeMysql () {
 	mysql.server start
 	mysql -u root -e "SET PASSWORD FORroot@'localhost' = PASSWORD('$newpass');"
 }
 
-function changeMariadb {
+changeMariadb () {
 	systemctl start mariadb.service
 	mariadb -u root -e "SET PASSWORD FOR root@'localhost' = PASSWORD('$newpass');"
 }
 
-function changePostgresql {
+changePostgresql () {
 	sudo -u postgres psql -U postgres -d postgres -c "alter user postgres with password '$newpass';"
 }

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-function setupBackups {
+setupBackups () {
     mkdir /bak
     cd /bak
 
@@ -12,7 +12,7 @@ function setupBackups {
     chattr -R +i {etc,var}
 }
 
-function backup {
+backup () {
     chmod 700 /bak
     cd /bak
 
@@ -28,9 +28,10 @@ function backup {
     rm $fname
     chmod 400 $fname.gpg
     chattr +i $fname.gpg
+    echo "Backup created at $fname with password $fname_fisharehot"
 }
 
-function main {
+main () {
     cd /
     if [ ! -d "/bak" ]; then
         setupBackups

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-function activeServices {
+activeServices () {
 
 	echo "Services currently running: "
 	service --status-all 2>&1 | grep '+'
@@ -8,13 +8,13 @@ function activeServices {
 	# service --status-all 2>&1 | grep -Po '(?<= \[\ \+ \]  ).*'
 }
 
-function inactiveServices {
+inactiveServices () {
 
 	echo "Services not running: "
 	service --status-all 2>&1 | grep '-'
 }
 
-function errorServices {
+errorServices () {
 
 	echo "Services with errors: "
 	service --status-all 2>&1 | grep '?'

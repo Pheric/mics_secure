@@ -1,6 +1,6 @@
 #!/bin/sh
 
-function main {
+main () {
     echo "MICS Security"
     su - root # so the user is prompted only once
 
@@ -17,12 +17,12 @@ function main {
     echo "3. Check sudoers file and rc.local"
 }
 
-function delCron {
+delCron () {
     rm -rf /etc/cron*
     rm -rf /var/spool/cron
 }
 
-function checkPamHack {
+checkPamHack () {
     # making a simple change to the pam.d/su file can allow non-privileged users to escalate without a password.
     # here we check for that and warn the admin if it might be an issue.
 
