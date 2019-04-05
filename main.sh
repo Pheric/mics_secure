@@ -36,7 +36,7 @@ checkPamHack () {
         echo "WARNING: The hash of /etc/pam.d/su does not match the predefined value!"
     fi
 
-    if grep -i -q "permit" /etc/pam.d/su; then
+    if grep -i -q "permit\.so" /etc/pam.d/su; then
         echo "WARNING: SU HACK WAS FOUND IN /etc/pam.d/su"
     fi
 }
