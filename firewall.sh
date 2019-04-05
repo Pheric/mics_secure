@@ -15,8 +15,8 @@ flushTables () {
 
 dropTables () {
 # Default drop all connections
-	iptables -p INPUT DROP
-	iptables -p OUTPUT DROP
+	iptables -P INPUT DROP
+	iptables -P OUTPUT DROP
 	iptables -P FORWARD DROP
 }
 
