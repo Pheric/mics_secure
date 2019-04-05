@@ -24,7 +24,7 @@ backup () {
     cd ..
 
     tar -czf $fname.tar.gz $fname
-    echo $fname_fisharehot | gpg --batch --yes --passphrase-fd 0 -c --no-symkey-cache $fname
+    echo "$fname_fisharehot" | gpg --batch --yes --passphrase-fd 0 -c --no-symkey-cache $fname
     rm $fname
     chmod 400 $fname.gpg
     chattr +i $fname.gpg

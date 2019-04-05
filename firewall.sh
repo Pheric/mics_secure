@@ -28,14 +28,14 @@ enableLoopback () {
 
 makeStateful () {
 # Accepts all traffic related to already established traffic.
-	iptables -A INPUT -m state --state RELATED, ESTABLISHED -j ACCEPT
-	iptables -A OUTPUT -m state --state RELATED, ESTABLISHED -j ACCEPT
+	iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+	iptables -A OUTPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
 }
 
 allowSshd () {
     # drop SSH attempts that exceed 5 every 1m
-    iptables -A INPUT -p tcp --dport 22 -m state --ctstate NEW -m recent --set
-    iptables -A INPUT -p tcp --dport 22 -m state --ctstate NEW -m recent --update --seconds 60 --hitcount 5 -j DROP
+    iptables -A INPUT -p tcp --dport 22 -m state --state NEW -m recent --set
+    iptables -A INPUT -p tcp --dport 22 -m state --state NEW -m recent --update --seconds 60 --hitcount 5 -j DROP
     # no output rule necessary, makeStateful will handle it (unless we need to SSH out)
 }
 
