@@ -111,6 +111,11 @@ rclocalRestoreSetup () {
 	fi
 }
 
+dynamicPrompt () {
+	# add in customizable walkthrough/table builder
+	read -r -p ""
+}
+
 main () {
     if [ ! -f /root/fw4.configured ]; then
 	    saveUnconfigured
@@ -173,6 +178,10 @@ while [ "$1" != "" ]; do
 			main
 			shift
 			;;	
+		-P | --prompt )
+			dynamicPrompt
+			shift
+			;;
 		-h | --help | "" )
 			echo " ___________________________________"
 			echo "[_______________Help Menu___________]"
