@@ -2,10 +2,14 @@
 # base script using generic iptables checklist
 
 saveUnconfigured () {
-	iptables-save > /root/fw{4,6}.unconfigured
+	# iptables-save > /root/fw{4,6}.unconfigured
+	iptables-save > /root/fw4.unconfigured
+	iptables-save > /root/fw6.unconfigured
 }
 saveConfigured () {
-	iptables-save > /root/fw{4,6}.configured
+	# iptables-save > /root/fw{4,6}.configured
+	iptables-save > /root/fw4.configured
+	iptables-save > /root/fw6.configured
 }
 
 flushTables () {
@@ -15,10 +19,19 @@ flushTables () {
 
 dropTables () {
 # Default drop all connections
-	iptables -p INPUT DROP
-	iptables -p OUTPUT DROP
+	iptables -P INPUT DROP
+	iptables -P OUTPUT DROP
 	iptables -P FORWARD DROP
 }
+
+makeStateful () {
+	iptables -P OUTPUT ACCEPT
+}
+
+makeStateless () {
+	iptables -P OUTPUT DROP
+}
+	
 
 enableLoopback () {
 # Enables the loopback adapter?
@@ -26,7 +39,7 @@ enableLoopback () {
 	iptables -A OUTPUT -o lo -j ACCEPT
 }
 
-makeStateful () {
+makeRelations () {
 # Accepts all traffic related to already established traffic.
 	iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
 	iptables -A OUTPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
@@ -36,7 +49,7 @@ allowSshd () {
     # drop SSH attempts that exceed 5 every 1m
     iptables -A INPUT -p tcp --dport 22 -m state --state NEW -m recent --set
     iptables -A INPUT -p tcp --dport 22 -m state --state NEW -m recent --update --seconds 60 --hitcount 5 -j DROP
-    # no output rule necessary, makeStateful will handle it (unless we need to SSH out)
+    # no output rule necessary, makeRelations will handle it (unless we need to SSH out)
 }
 
 # Additional considerations:
@@ -69,17 +82,38 @@ allowMySql () {
 
 
 saveConfiguredTable () {
-	iptables-save > /root/fw{4,6}.rules
+	chattr -i /root/fw4.rules
+	chattr -i /root/fw6.rules
+	# iptables-save > /root/fw{4,6}.rules
+
+	iptables-save > /root/fw4.rules
+	iptables-save > /root/fw6.rules
+	
+	chattr -i /root/fw4.rules
+	chattr -i /root/fw6.rules
+}
+
+restoreConfiguredTable () {
+	# iptables-restore < /root/fw{4,6}.rules
+	iptables-restore > /root/fw4.rules
+	iptables-restore > /root/fw6.rules
 }
 
 rclocalRestoreSetup () {
-	if [ ./rclocalCompat.sh -ne 0 ]; then
+	if ! ./rclocalCompat.sh ; then
     	echo "rc.local configuration failed! Nonzero status code for rclocalCompat.sh" > /dev/stderr
 	else
     	chattr -i /etc/rc.local
-    	echo "iptables-restore /root/fw{4,6}.rules" >> /etc/rc.local
+    	# echo "iptables-restore /root/fw{4,6}.rules" >> /etc/rc.local
+    	echo "iptables-restore /root/fw4.rules" >> /etc/rc.local
+    	echo "iptables-restore /root/fw6.rules" >> /etc/rc.local
     	chattr +i /etc/rc.local
 	fi
+}
+
+dynamicPrompt () {
+	# add in customizable walkthrough/table builder
+	read -r -p ""
 }
 
 main () {
@@ -93,7 +127,7 @@ main () {
 	# rule functions
 	enableLoopback
 	allowSshd
-	makeStateful
+	makeRelations
 	# end rule functions
 
 	saveConfiguredTable
@@ -104,4 +138,66 @@ main () {
 	fi
 }
 
-main
+while [ "$1" != "" ]; do
+	# Follow this format to add new flags
+	case $1 in
+		# This will check for the -f or --flushTables argument in the command line call
+		-F | --flushTables )
+			# Code runs here
+			# this if statement is more for example purposes to showcase shift
+			if [ "$2" = "echo" ] || [ "$2" = "print" ]; then
+				echo "Flushing Tables"
+				flushTables
+				shift
+			else
+				flushTables
+			fi
+			shift
+			;;
+		-Sf | --stateful )
+			makeStateful
+			shift		
+			;;
+		-Sl | --stateless )
+			makeStateless
+			shift			
+			;;
+		-Ss | --ssh )
+			allowSshd
+			shift			
+			;;
+		-M | --mysql )
+			allowMySql			
+			shift					
+			;;
+		-R | --restore )
+			restoreConfiguredTable
+			shift
+			;;
+		-C | --config )
+			main
+			shift
+			;;	
+		-P | --prompt )
+			dynamicPrompt
+			shift
+			;;
+		-h | --help | "" )
+			echo " ___________________________________"
+			echo "[_______________Help Menu___________]"
+			echo "-h  | --help	: Shows this menu."
+			echo "-C  | --config	: Runs the default configuration (main)"
+			echo "-R  | --restore	: Restores the saved configuration"
+			echo "-F  | --flushTables	: Flushes all rules"
+			echo "-M  | --mysql	: Allows Mysql through firewall"
+			echo "-Ss | --ssh	: Allows SSH"
+			echo "-Sl | --stateless	: Makes the firewall stateless (manually configure each connection)"
+			echo "-Sf | --stateful	: Makes the firewall stateful (allow all outgoing traffic and returning related traffic."
+			echo "___________________________________"
+			shift
+			;;
+		# this will shift through all "bad" input (ignore it) in order to process valid flags.
+		* ) shift
+			;;
+	esac
+done

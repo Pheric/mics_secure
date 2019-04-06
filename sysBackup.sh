@@ -2,25 +2,30 @@
 
 setupBackups () {
     mkdir /bak
-    cd /bak
+    cd /bak || { echo "Directory /bak not found" ; exit 1; }
 
     mkdir etc
-    cp -r /etc/cron* etc/
-    mkdir -p var/spool/cron
-    cp -r /var/spool/cron/* var/spool/cron/
-
+    if /etc/cron* ; then
+    	cp -r /etc/cron* etc/
+    	mkdir -p var/spool/cron
+    	cp -r /var/spool/cron/* var/spool/cron/
+    else 
+	echo "No chron installation found."
+    fi
     chattr -R +i {etc,var}
 }
 
 backup () {
     chmod 700 /bak
-    cd /bak
+    cd /bak || { echo "Directory /bak not found" ; exit 1; }
 
-    fname="bak_`date +%H_%M`"
-    mkdir $fname
-    cd $fname
+    # fname="bak_`date +%H_%M`"
+    fname="bak_$(date +%H_%M)"
+    mkdir "$fname"
+    cd "$fname" || { echo "Directy not found." ; exit 1;  }
 
-    cp -R {/etc,/var,/home,/root} .
+    # cp -R {/etc,/var,/home,/root} .
+    cp -R {/etc,/var} .
     cd ..
 
     tar -czf $fname.tar.gz $fname
@@ -32,7 +37,7 @@ backup () {
 }
 
 main () {
-    cd /
+    cd / || { echo "/ doesn't exist? Things are looking pretty bad." ; exit 1;  }
     if [ ! -d "/bak" ]; then
         setupBackups
     fi
