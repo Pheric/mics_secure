@@ -7,11 +7,12 @@ main () {
       exit
     fi
 
-    chmod +x *.sh
-    ./sysBackup.sh
+    # Commenting out the chmod; scripts should be run only as root. If need, use 70."
+    # chmod +x *.sh
+    bash sysBackup.sh
     delCron # safe because cron jobs should be saved already. If this fails, we should have a system backup.
-    ./firewall.sh
-    ./sshdConfigure.sh
+    bash firewall.sh -C
+    bash sshdConfigure.sh
     checkPamHack
 
     echo "Reminders:"
