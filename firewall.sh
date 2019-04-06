@@ -3,7 +3,7 @@
 
 
 
-iptables-save > /etc/iptables.
+iptables-save > /etc/iptables.unconfigured
 
 iptables -F # clear out old rules
 iptables -X # clears out all chains
