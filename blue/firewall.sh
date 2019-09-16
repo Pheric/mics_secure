@@ -100,7 +100,7 @@ restoreConfiguredTable () {
 }
 
 rclocalRestoreSetup () {
-	if ! ./rclocalCompat.sh ; then
+	if ! rclocalCompat.sh ; then
     	echo "rc.local configuration failed! Nonzero status code for rclocalCompat.sh" > /dev/stderr
 	else
     	chattr -i /etc/rc.local
