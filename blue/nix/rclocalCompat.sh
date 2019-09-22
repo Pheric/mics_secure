@@ -13,7 +13,7 @@ if [ ! -f /etc/rc.local ]; then
 
     [Install]
       WantedBy=multi-user.target
-    EOL
+EOL
 
     echo "#!/usr/bin/env bash" > /etc/rc.local
     chmod 755 /etc/rc.local

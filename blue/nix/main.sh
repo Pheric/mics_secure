@@ -9,16 +9,28 @@ main () {
 
     # Commenting out the chmod; scripts should be run only as root. If need, use 70."
     # chmod +x *.sh
+    bash pass.sh
+    bash userChecker.sh
     bash sysBackup.sh
     delCron # safe because cron jobs should be saved already. If this fails, we should have a system backup.
-    bash firewall.sh -C
+    bash firewall.sh -C # Saves default fw, safe, and runs rclocalcompat
     bash sshdConfigure.sh
+    bash databasepassch.sh
     checkPamHack
 
+    echo "Done:"
+    echo "Passwords changed for all users INCLUDING ROOT"
+    echo "All user homes removed, shells blocked, and root SSH keys deleted"
+    echo "System backed up and encrypted in /bak"
+    echo "Crontabs deleted"
+    echo "rc.local configured as a service"
+    echo "Firewall defaults set"
+    echo "SSHD configured"
+    echo "MariaDB root password changed"
+    echo ""
     echo "Reminders:"
-    echo "1. Disable root login through SSH (line 32)"
-    echo "2. Check crontabs (/bak/etc/ and /bak/var/spool/cron/)"
-    echo "3. Check sudoers file and rc.local"
+    echo "1. Check crontabs (/bak/etc/ and /bak/var/spool/cron/)"
+    echo "2. Check sudoers file"
 }
 
 delCron () {

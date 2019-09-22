@@ -34,7 +34,7 @@ PermitRootLogin yes
 MaxAuthTries 2
 MaxSessions 2
 
-PubkeyAuthentication no
+PubkeyAuthentication yes
 
 # The default is to check both .ssh/authorized_keys and .ssh/authorized_keys2
 # but this is overridden so installations will only check .ssh/authorized_keys
@@ -49,13 +49,13 @@ AuthorizedKeysFile	.ssh/authorized_keys
 #HostbasedAuthentication no
 # Change to yes if you don't trust ~/.ssh/known_hosts for
 # HostbasedAuthentication
-#IgnoreUserKnownHosts no
+IgnoreUserKnownHosts yes
 # Don't read the user's ~/.rhosts and ~/.shosts files
-#IgnoreRhosts yes
+IgnoreRhosts yes
 
 # To disable tunneled clear text passwords, change to no here!
-#PasswordAuthentication yes
-#PermitEmptyPasswords no
+PasswordAuthentication no
+PermitEmptyPasswords no
 
 # Change to no to disable s/key passwords
 ChallengeResponseAuthentication no
@@ -88,9 +88,9 @@ X11Forwarding no
 #X11DisplayOffset 10
 #X11UseLocalhost yes
 #PermitTTY yes
-PrintMotd no # pam does that
+PrintMotd yes
 #PrintLastLog yes
-#TCPKeepAlive yes
+TCPKeepAlive no
 #PermitUserEnvironment no
 #Compression delayed
 #ClientAliveInterval 0
@@ -98,12 +98,12 @@ PrintMotd no # pam does that
 #UseDNS no
 #PidFile /run/sshd.pid
 #MaxStartups 10:30:100
-#PermitTunnel no
+PermitTunnel no
 #ChrootDirectory none
 #VersionAddendum none
 
 # no default banner path
-#Banner none
+#Banner
 
 # override default of no subsystems
 # Subsystem	sftp	/usr/lib/ssh/sftp-server

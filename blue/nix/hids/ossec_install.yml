@@ -1,0 +1,34 @@
+--- This is an Ansible playbook for setting up OSSEC v3.3.0
+- hosts: dsuarch
+  vars:
+    repo_host: "http://127.0.0.1/"
+    hids_whitelist_networks: "10.20.1.0/24 10.20.2.0/24"
+  remote_user: root
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: Download OSSEC tarball from $repo_host
+      copy:
+        checksum: "sha1:34d53db232a3ccd270e5fffcf78a0bcf518f26eb"
+        dest: /root/
+        force: yes
+        mode: 0700
+        owner: root
+        url: "{{ repo_host }}/blue/nix/hids/ossec-hids-3.3.0.tar.gz"
+        use_proxy: no
+    - name: Extract the tarball (req gtar command)
+      unarchive:
+        copy: no
+        src: /root/ossec-hids-3.3.0.tar.gz
+        dest: /root/
+        mode: 0700
+        owner: root
+    - name: Configure hosts whitelist
+      lineinfile:
+        path: /root/ossec-hids-3.3.0/etc/preloaded-vars.conf
+        regexp: "^#USER_WHITE_LIST=\".*"
+        line: "{{ hids_whitelist_networks }}"
+    - name: Run OSSEC install script
+      command: sh /root/ossec-hids-3.3.0/install.sh
+    - name: Start OSSEC
+      command: /root/ossec/bin/ossec-control start

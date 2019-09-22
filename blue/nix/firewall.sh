@@ -12,26 +12,17 @@ saveConfigured () {
 	iptables-save > /root/fw6.configured
 }
 
-flushTables () {
-	iptables -F # clear out old rules
-	iptables -X # clears out all chains
+flush () {
+	iptables -X # clears out extra chains
+	iptables -F # clear out rules
 }
 
-dropTables () {
+setPolicy () {
 # Default drop all connections
 	iptables -P INPUT DROP
 	iptables -P OUTPUT DROP
 	iptables -P FORWARD DROP
 }
-
-makeStateful () {
-	iptables -P OUTPUT ACCEPT
-}
-
-makeStateless () {
-	iptables -P OUTPUT DROP
-}
-	
 
 enableLoopback () {
 # Enables the loopback adapter?
@@ -46,10 +37,11 @@ makeRelations () {
 }
 
 allowSshd () {
-    # drop SSH attempts that exceed 5 every 1m
+    # drop SSH attempts that exceed 5 every 30s
     iptables -A INPUT -p tcp --dport 22 -m state --state NEW -m recent --set
-    iptables -A INPUT -p tcp --dport 22 -m state --state NEW -m recent --update --seconds 60 --hitcount 5 -j DROP
-    # no output rule necessary, makeRelations will handle it (unless we need to SSH out)
+    iptables -A INPUT -p tcp --dport 22 -m state --state NEW -m recent --update --seconds 30 --hitcount 5 -j DROP
+
+    iptables -A OUTPUT -p tcp --sport 22 -j ACCEPT
 }
 
 # Additional considerations:
@@ -89,8 +81,8 @@ saveConfiguredTable () {
 	iptables-save > /root/fw4.rules
 	iptables-save > /root/fw6.rules
 	
-	chattr -i /root/fw4.rules
-	chattr -i /root/fw6.rules
+	chattr +i /root/fw4.rules
+	chattr +i /root/fw6.rules
 }
 
 restoreConfiguredTable () {
@@ -121,8 +113,7 @@ main () {
 	    saveUnconfigured
     fi
 
-	flushTables
-	dropTables
+	flush
 
 	# rule functions
 	enableLoopback
@@ -130,9 +121,12 @@ main () {
 	makeRelations
 	# end rule functions
 
+	setPolicy
+
 	saveConfiguredTable
 
 	if [ ! -f /root/fw4.configured ]; then
+	    # Adds lines to restore the firewall rules from rc.local on boot
 	    rclocalRestoreSetup
 	    saveConfigured
 	fi
@@ -141,16 +135,16 @@ main () {
 while [ "$1" != "" ]; do
 	# Follow this format to add new flags
 	case $1 in
-		# This will check for the -f or --flushTables argument in the command line call
-		-F | --flushTables )
+		# This will check for the -f or --flush argument in the command line call
+		-F | --flush )
 			# Code runs here
 			# this if statement is more for example purposes to showcase shift
 			if [ "$2" = "echo" ] || [ "$2" = "print" ]; then
 				echo "Flushing Tables"
-				flushTables
+				flush
 				shift
 			else
-				flushTables
+				flush
 			fi
 			shift
 			;;
@@ -188,11 +182,9 @@ while [ "$1" != "" ]; do
 			echo "-h  | --help	: Shows this menu."
 			echo "-C  | --config	: Runs the default configuration (main)"
 			echo "-R  | --restore	: Restores the saved configuration"
-			echo "-F  | --flushTables	: Flushes all rules"
+			echo "-F  | --flush	: Flushes all rules"
 			echo "-M  | --mysql	: Allows Mysql through firewall"
 			echo "-Ss | --ssh	: Allows SSH"
-			echo "-Sl | --stateless	: Makes the firewall stateless (manually configure each connection)"
-			echo "-Sf | --stateful	: Makes the firewall stateful (allow all outgoing traffic and returning related traffic."
 			echo "___________________________________"
 			shift
 			;;

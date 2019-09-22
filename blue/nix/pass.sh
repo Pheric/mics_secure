@@ -2,7 +2,7 @@
 
 # shellcheck disable=SC2162
 read -p "Enter password salt:" salt
-users=$(getent passwd | grep '/bin/.*sh' | grep -v root | cut -d ":" -f 1)
+users=$(getent passwd | grep '/bin/.*sh' | cut -d ":" -f 1)
 for user in $users; do
   password=$(echo "$user" | sha256sum | cut -c-7)$salt
   echo "$user:$password" | chpasswd
