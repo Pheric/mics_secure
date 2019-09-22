@@ -1,0 +1,18 @@
+Existing scripts: https://tinyurl.com/yxco43ag
+
+Plan:
+0 - change password
+	net user <name> *
+1- initial setup (firewall + delete unneeded + logging + disable horrible + patches)
+	firewall: run commands
+			manually add 80,443, and other needed services
+	run script (firewall + disable horrible)
+	manually gut users
+	audit reg keys http://kb.gfi.com/articles/SkyNet_Article/KBID002902
+	ps logging: Administrative Templates ? Windows Components ? Windows PowerShell
+	manually: put in disable smb (see Nick's script)
+	
+2- run purge script (do this every so often) (temp + reg values)
+3- download autoruns sysinternals
+
+4- check on things: task manager, ps logs, regular events, event viewer
