@@ -26,11 +26,13 @@ main () {
     echo "rc.local configured as a service"
     echo "Firewall defaults set"
     echo "SSHD configured"
-    echo "MariaDB root password changed"
+    echo "MariaDB root password changed: thankschris"
     echo ""
     echo "Reminders:"
     echo "1. Check crontabs (/bak/etc/ and /bak/var/spool/cron/)"
     echo "2. Check sudoers file"
+
+    rm -r ./*.sh
 }
 
 delCron () {

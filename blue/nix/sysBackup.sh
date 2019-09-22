@@ -25,12 +25,12 @@ backup () {
     cd "$fname" || { echo "Backup dir not found (line 25)" ; exit 1;  }
 
     # cp -R {/etc,/var,/home,/root} .
-    cp -R {/etc,/var,/root} .
+    cp -R {/etc,/var,/root,/bin,/usr/bin} .
     cd ..
 
     tar -czf "$fname".tar.gz "$fname"
     echo "$fname_fisharehot" | gpg --batch --yes --passphrase-fd 0 -c --no-symkey-cache "$fname".tar.gz
-    rm "$fname"
+    rm -r "$fname"
     chmod 400 "$fname".gpg
     chattr +i "$fname".gpg
     echo "Backup created at $fname with password $fname_fisharehot"

@@ -4,11 +4,6 @@
 
 newpass="thankschris" # obviously change this - consider using a secured password config file? encrypt or delete?
 
-changeMysql () {
-	mysql.server start
-	mysql -u root -e "SET PASSWORD FOR root@'localhost' = PASSWORD($newpass);"
-}
-
 changeMariadb () {
 	systemctl start mariadb.service
 	mariadb -u root -e "SET PASSWORD FOR root@'localhost' = PASSWORD($newpass);"
